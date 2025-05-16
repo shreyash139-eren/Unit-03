@@ -1,26 +1,60 @@
-document.querySelector("button").addEventListener("click",()=>{
-    let input=document.getElementById("text").value
-    let list=document.getElementById("list")
+
+let Tasks=0
+let Complete=0
+let incomp=0
+let complete=document.getElementById("complete")
+let incomplete=document.getElementById("incomplete")
+let count=document.getElementById("total")
+let compl=document.getElementById("comp")
+let incom=document.getElementById("incomp")
+
+function updateCounter(){
+    count.innerText=`Tasks: ${Tasks}`
+    compl.innerText=`Completed: ${Complete}`
+    incom.innerText=`Incomplete: ${Tasks-Complete}`
+}
+
+function Add(){
+    let input=document.getElementById("add").value
     let li=document.createElement("li")
+    let button=document.createElement("button")
+    let check=document.createElement("input")
+    check.type="checkbox"
+    button.innerText="Delete"
     li.innerText=input
-
-    let mark=document.createElement("input")
-    mark.type="checkbox"
-    mark.class="mark"
-
-    let del=document.createElement("button")
-    del.innerText="Delete"
-
-    li.append(mark,del)
+    li.append(check,button)
     if(input.length>0){
-    list.appendChild(li)
-    }
-    else{
-        alert("Invalid Task!")
+    incomplete.appendChild(li)
+    Tasks++
+
+    updateCounter()
     }
 
-    del.onclick=function(){
+    button.addEventListener('click',()=>{
+        Tasks--
         li.remove()
-    }
-})
+        
+    updateCounter()
+    })
 
+    check.addEventListener("change",()=>{
+        if(check.checked){
+            Complete++
+            complete.appendChild(li)
+            
+        }
+        else if(!check.checked){
+            Complete--
+            incomplete.appendChild(li)
+        }
+
+    updateCounter()
+    })
+}
+ function sorting(){
+    let sor=document.getElementById("sort")
+    sor.sort((a,b)=>{
+        a.innerText.localeCompare(b.innerText)
+    })
+    }
+   
