@@ -25,7 +25,6 @@
             gap: 2%;
         }
         #container>div{
-            padding-top: 10px;
             border: 1px solid;
             text-align: center;
         }
@@ -89,10 +88,18 @@
         
 
         //filter
-        let categories=document.getElementById("filter").value
-        let filtered=categories=="all"?products:
-        products.filter((ele)=>ele.category==categories)
-
+        document.getElementById("filter").addEventListener("change",()=>{
+            let categories=document.getElementById("filter").value
+            
+            if(categories=="all"){
+                return products
+            }
+            else{
+                products.filter((ele)=>{
+                    console.log(ele.category==categories)
+                })
+            }
+        })
     }
     Products()
 </script>
