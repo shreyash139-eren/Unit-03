@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Library Management</title>
+    <link rel="stylesheet" href="LibraryManagementSystem.css">
+    <style>
+        *{
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+            font-family: sans-serif;
+        }
+        #member, #books{
+            width: 40%;
+            margin: auto;
+            display: grid;
+            padding: 20px;
+            gap: 8px;
+            
+        }
+        input,#available,#active{
+            height: 25px;
+            border-radius: 10px;
+            padding: 3px;
+            text-align: center;
+        }
+        button{
+            height: 25px;
+            border-radius: 10px;
+        }
+        h2{
+            text-align: center;
+            font-size: 36px;
+        }
+        label{
+            font-size: 20px;
+        }
+        button:hover{
+            cursor: pointer;
+            background-color: rgba(128, 128, 128, 0.486);
+        }
+        h1{
+            padding-top: 20px;
+            text-align: center;
+            font-size: 40px;
+        }
+        #error, #error1{
+            text-align: center;
+            font-size: 22px;
+            font-weight:bolder;
+            color: red;
+            padding-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1><u>Library Management System</u></h1>
+    <div id="books">
+        <h2><u>Add Book</u></h2>
+        <label for="title">Title : </label>
+        <input type="text" id="title" placeholder="Enter title">
+        <label for="author">Author : </label>
+        <input type="text" id="author" placeholder="Enter authors name">
+        <label for="genre">Genre : </label>
+        <input type="text" id="genre" placeholder="Enter genre">
+        <label for="year">Year : </label>
+        <input type="number" id="year" placeholder="Enter publication year">
+        <label for="available">Available : </label>
+        <select name="" id="available">
+            <option value="">Available</option>
+            <option value="true">True</option>
+            <option value="false">False</option>
+        </select>
+        <button onclick="Add()">Add Book</button>
+        <button>Edit Book</button>
+    </div>
+    <div id="error"></div>
+
+    <!-- adding members -->
+    <div id="member">
+        <h2><u>Add Member</u></h2>
+        <label for="name">Name :</label>
+        <input type="text" id="name" placeholder="Enter name">
+        <label for="date">Membership Date : </label>
+        <input type="date" id="date">
+        <label for="active">Status</label>
+        <select name="" id="active">
+            <option value="">Membership Status</option>
+            <option value="true">Active</option>
+            <option value="false">Inactive</option>
+        </select>
+        <button onclick="Member()">Add Member</button>
+        <button>Edit Member</button>
+    </div>
+    <div id="error1"></div>
+
+    <script src="LibraryManagementSystem.js">
+
+        
+           
+        let id=3
+        let mid=3
+        //add books
+        async function Add(){
+            
+        const Title=document.getElementById("title").value.toLowerCase()
+        const Author=document.getElementById("author").value.toLowerCase()
+        const Genre=document.getElementById("genre").value.toLowerCase()
+        const Year=document.getElementById("year").value
+        const Available=document.getElementById("available").value
+         
+        const Error1=document.getElementById("error")
+             
+            
+            let book={
+                id:id,
+                title: Title,
+                author: Author,
+                genre: Genre,
+                publishedYear: Year,
+                available: Available
+            }
+
+            if(Title.length<4 || Author.length<5 || Genre.length<5 || Year.length!==4){
+                Error1.innerHTML=""
+                const p=document.createElement("p")
+                p.innerText="Please enter valid Book data."
+                Error1.appendChild(p)
+                return
+            }
+
+            let display=await fetch("https://library-2795b-default-rtdb.asia-southeast1.firebasedatabase.app/books.json")
+            let data=await display.json()
+            let arr= data ? Object.entries(data).map(([id, books])=>({id, ...books})) : []
+
+            let exist=arr.find((ele)=> ele.title===Title)
+
+            if (exist) {
+            let p = document.createElement("p");
+            p.innerText = `${Title} already exists!`;
+            Error1.innerHTML = "";
+            Error1.appendChild(p);
+            return; 
+            }
+
+            let res=await fetch("https://library-2795b-default-rtdb.asia-southeast1.firebasedatabase.app/books.json",{
+                method:'POST',
+                headers:{
+                    "Content-Type":'application/json',
+                },
+                body:JSON.stringify(book)
+            })
+            id++
+            
+            document.getElementById("title").value=""
+            document.getElementById("author").value=""
+            document.getElementById("genre").value=""
+            document.getElementById("year").value=
+            document.getElementById("available").value=""
+        }
+
+        //add members
+         async function Member(){
+            const Name=document.getElementById("name").value.toLowerCase()
+            const Date=document.getElementById("date").value
+            const Status=document.getElementById("active").value
+            const Error2=document.getElementById("error1")
+            
+            let Member={
+                id:mid,
+                name:Name,
+                membershipDate: Date,
+                active: Status
+            }
+
+            if(Name.length<4 || Status.length<4){
+                Error2.innerHTML=""
+                const p=document.createElement("p")
+                p.innerText="Please enter valid Member data."
+                Error2.appendChild(p)
+                return
+            }
+
+            let display=await fetch("https://library-2795b-default-rtdb.asia-southeast1.firebasedatabase.app/members.json")
+            let data=await display.json()
+            let arr= data ? Object.entries(data).map(([id, member])=>({id, ...member})) : []
+
+            let exist=arr.find((ele)=> ele.name===Name)
+
+            if (exist) {
+            let p = document.createElement("p");
+            p.innerText = `${Name} already exists!`;
+            Error1.innerHTML = "";
+            Error1.appendChild(p);
+            return; 
+            }
+
+            let res=await fetch("https://library-2795b-default-rtdb.asia-southeast1.firebasedatabase.app/members.json",{
+                method:'POST',
+                headers:{
+                    "Content-Type":'application/json',
+                },
+                body:JSON.stringify(Member)
+            })
+            id++
+            
+            document.getElementById("name").value=""
+            document.getElementById("date").value=""
+            document.getElementById("active").value=""
+        }
+    </script>
+</body>
+</html>
